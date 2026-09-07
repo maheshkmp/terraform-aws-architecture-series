@@ -80,7 +80,7 @@ graph TD
     Client[Client / Administrator] -->|SSH: Port 22| IGW[Internet Gateway]
     Client -->|HTTP/HTTPS: 80, 443| IGW
     
-    subgraph AWS VPC ["VPC: 10.0.0.0/16"]
+    subgraph VPC ["VPC: 10.0.0.0/16"]
         IGW --> RT[Public Route Table]
         
         subgraph Public Subnet ["Public Subnet: 10.0.1.0/24"]
@@ -97,7 +97,7 @@ graph TD
     classDef compute fill:#EC7211,stroke:#232F3E,stroke-width:2px,color:white;
     classDef network fill:#147EBA,stroke:#232F3E,stroke-width:2px,color:white;
     
-    class AWS VPC network;
+    class VPC network;
     class EC2 compute;
     class IGW aws;
 ```
