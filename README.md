@@ -11,8 +11,8 @@ Each directory in this repository represents an independent, self-contained arch
 ```
 terraform-aws-architecture-series/
 │
-├── 📁 01-vpc-ec2-web-server              <-- (Active Architecture)
-├── 📁 02-vpc-public-private-subnets      (Upcoming)
+├── 📁 01-vpc-ec2-web-server              <-- Custom VPC with EC2 Web Server
+├── 📁 02-vpc-private-app-public-alb      <-- Public ALB with Private App EC2 Instance
 ├── 📁 03-three-tier-web-application      (Upcoming)
 ├── 📁 04-alb-auto-scaling                (Upcoming)
 ├── 📁 05-rds-high-availability           (Upcoming)
@@ -104,47 +104,105 @@ graph TD
 
 ---
 
+## 📐 Architecture 02: Public ALB with Private App EC2 Instance
+
+> **Directory**: [`./02-vpc-private-app-public-alb`](./02-vpc-private-app-public-alb)
+
+### Overview & Security Highlights
+This architecture pattern provisions a secure 2-tier infrastructure in AWS (`ap-south-1`):
+- **Public Application Load Balancer**: Multi-AZ deployment across two public subnets (`10.0.1.0/24` and `10.0.3.0/24`) to handle incoming public web traffic.
+- **Private Application Instance**: Deployed inside a private subnet (`10.0.2.0/24`) with no public IP address assigned.
+- **Security Group Chaining**: App security group restricts inbound traffic on port 3000 exclusively from the ALB security group (`alb-sg`).
+
+### Infrastructure Flow (Mermaid Diagram)
+
+```mermaid
+flowchart TD
+    Client([Internet User]) -->|HTTP :80 / HTTPS :443| IGW[Internet Gateway]
+    
+    subgraph VPC ["AWS VPC (10.0.0.0/16)"]
+        IGW --> RT[Public Route Table]
+        
+        subgraph AZ1 ["Availability Zone: ap-south-1a"]
+            subgraph PublicSubnet1 ["Public Subnet 1 (10.0.1.0/24)"]
+                ALB_Node1[ALB Node]
+            end
+            
+            subgraph PrivateSubnet ["Private Subnet (10.0.2.0/24)"]
+                AppInstance["EC2 App Instance\n(Port 3000, Ubuntu 24.04)"]
+            end
+        end
+        
+        subgraph AZ2 ["Availability Zone: ap-south-1b"]
+            subgraph PublicSubnet2 ["Public Subnet 2 (10.0.3.0/24)"]
+                ALB_Node2[ALB Node]
+            end
+        end
+        
+        RT --> PublicSubnet1
+        RT --> PublicSubnet2
+        
+        subgraph ALB ["Application Load Balancer (app-lb)"]
+            ALB_Node1
+            ALB_Node2
+        end
+        
+        ALB -->|Listener :80 -> TG :3000| TG[Target Group: app-tg]
+        TG -->|Target Attachment :3000| AppInstance
+    end
+
+    subgraph SecurityGroups ["Security Groups"]
+        ALB_SG["ALB SG (alb-sg)\nInbound: 80, 443 from 0.0.0.0/0"]
+        APP_SG["App SG (app-sg)\nInbound: 3000 from alb-sg ONLY"]
+    end
+    
+    ALB_Node1 -. protected by .- ALB_SG
+    ALB_Node2 -. protected by .- ALB_SG
+    AppInstance -. protected by .- APP_SG
+```
+
+---
+
 ## 💻 Quick Start & Deployment Guide
 
 ### 1. Provision Architecture 01
 Navigate to the directory of module 01:
 ```bash
 cd 01-vpc-ec2-web-server
-```
-
-### 2. Initialize Terraform
-```bash
 terraform init
-```
-
-### 3. Review Plan & Apply
-```bash
-# For Development environment
 terraform plan -var-file="dev.tfvars"
 terraform apply -var-file="dev.tfvars"
-
-# For Production environment
-terraform plan -var-file="prod.tfvars"
-terraform apply -var-file="prod.tfvars"
 ```
 
-### 4. Clean Up / Destroy
+### 2. Provision Architecture 02
+Navigate to the directory of module 02:
 ```bash
-terraform destroy -var-file="dev.tfvars"
+cd 02-vpc-private-app-public-alb
+terraform init
+terraform plan
+terraform apply
 ```
 
----
+### 3. General Terraform Workflow
+```bash
+# Initialize working directory
+terraform init
 
-## 🏷️ Variables Reference (Module 01)
+# Validate syntax
+terraform validate
 
-| Variable | Type | Description |
-| :--- | :--- | :--- |
-| `region` | `string` | The target AWS Region (e.g., `us-east-1`, `ap-south-1`) |
-| `instance_type` | `string` | EC2 instance sizing (e.g., `t2.micro`, `t3.medium`) |
-| `environment` | `string` | Tag identifying deployment stage (`dev` / `prod`) |
-| `my_ip` | `string` | IP address allowed to SSH into the EC2 instance |
+# Preview plan
+terraform plan
+
+# Apply changes
+terraform apply
+
+# Destroy created resources
+terraform destroy
+```
 
 ---
 
 ## 📜 License
 This project is open-source under the MIT License.
+
