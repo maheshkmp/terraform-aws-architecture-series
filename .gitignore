@@ -1,0 +1,26 @@
+# Local state files
+*.tfstate
+*.tfstate.*
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude all .tfvars files with sensitive data
+*.tfvars
+*.tfvars.json
+!example.tfvars
+
+# Key and certificate files
+*.pem
+*.key
+
+# Exclude CLI configuration files
+.terraformrc
+terraform.rc
+
+# Ignore terraform directory
+.terraform/
+
+# Ignore lock files if you choose, or keep them tracked
+# .terraform.lock.hcl
