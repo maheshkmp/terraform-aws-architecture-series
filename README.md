@@ -13,7 +13,8 @@ terraform-aws-architecture-series/
 │
 ├── 📁 01-vpc-ec2-web-server              <-- Custom VPC with EC2 Web Server
 ├── 📁 02-vpc-private-app-public-alb      <-- Public ALB with Private App EC2 Instance
-├── 📁 03-three-tier-web-application      (Upcoming)
+├── 📁 03-vpc-kubeadm-k8s-node            <-- Single-Node Kubeadm Kubernetes Cluster on EC2
+├── 📁 04-three-tier-web-application      (Upcoming)
 ├── 📁 04-alb-auto-scaling                (Upcoming)
 ├── 📁 05-rds-high-availability           (Upcoming)
 ├── 📁 06-nat-gateway-private-ec2         (Upcoming)
@@ -160,6 +161,22 @@ flowchart TD
     ALB_Node2 -. protected by .- ALB_SG
     AppInstance -. protected by .- APP_SG
 ```
+
+---
+
+## 📐 Architecture 03: Single-Node Kubeadm Kubernetes Cluster on EC2
+
+> **Directory**: [`./03-vpc-kubeadm-k8s-node`](./03-vpc-kubeadm-k8s-node)
+
+### Overview & Features
+This module provisions an AWS EC2 instance pre-configured for **Kubernetes (`kubeadm`)** control plane node deployment:
+- **Compute Sizing:** `t3.medium` (2 vCPUs, 4 GB RAM, 30 GB `gp3` EBS volume).
+- **Network & IP:** Elastic IP (EIP) assigned to ensure persistent IP address across reboots.
+- **Automated Bootstrapping (`user_data.sh`):**
+  - Configures kernel parameters (`overlay`, `br_netfilter`, `ip_forward`) & 2GB Swap buffer.
+  - Installs and configures `containerd` with `SystemdCgroup = true`.
+  - Installs `kubeadm`, `kubelet`, and `kubectl` (v1.30+).
+- **Post-Deploy Commands:** Fully documented steps to run `kubeadm init`, install Flannel CNI, and configure Rancher local-path storage provisioner.
 
 ---
 
