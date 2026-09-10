@@ -38,7 +38,7 @@ resource "aws_security_group" "web" {
     to_port     = 22
     protocol    = "tcp"
 
-    cidr_blocks = ["$(var.my_ip)/32"]
+    cidr_blocks = ["${var.my_ip}/32"]
   }
 
   ingress {
