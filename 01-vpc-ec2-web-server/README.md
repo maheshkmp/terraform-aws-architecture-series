@@ -1,32 +1,10 @@
-# 🚀 Terraform AWS Architecture Series
+# 01 - Custom VPC with EC2 Web Server
 
-Welcome to the **Terraform AWS Architecture Series** repository! This repository is structured as a progressive hands-on laboratory for designing, provisioning, and scaling production-ready AWS cloud infrastructure using Infrastructure as Code (IaC) with Terraform.
-
-Each directory in this repository represents an independent, self-contained architecture pattern.
+This Terraform project provisions a custom Amazon VPC with a public subnet, internet gateway, route tables, security group, and an EC2 web server instance running Ubuntu 24.04 LTS.
 
 ---
 
-## 🗺️ Repository Architecture Roadmap
-
-```
-terraform-aws-architecture-series/
-│
-├── 📁 01-vpc-ec2-web-server              <-- (Active Architecture)
-├── 📁 02-vpc-public-private-subnets      (Upcoming)
-├── 📁 03-three-tier-web-application      (Upcoming)
-├── 📁 04-alb-auto-scaling                (Upcoming)
-├── 📁 05-rds-high-availability           (Upcoming)
-├── 📁 06-nat-gateway-private-ec2         (Upcoming)
-├── 📁 07-ecs-containerized-application   (Upcoming)
-├── 📁 08-serverless-web-application      (Upcoming)
-└── 📁 09-production-ready-architecture   (Upcoming)
-```
-
----
-
-## 📐 Architecture 01: Custom VPC with EC2 Web Server
-
-> **Directory**: [`./01-vpc-ec2-web-server`](./01-vpc-ec2-web-server)
+## 🏛️ Architecture Overview
 
 ### System Design Diagram
 
