@@ -84,11 +84,11 @@ resource "aws_security_group" "k8s" {
   vpc_id      = aws_vpc.main.id
 
   ingress {
-    description = "SSH access"
+    description = "SSH access (ISP Subnet)"
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.my_ip}/32"]
+    cidr_blocks = ["45.121.0.0/16"]
   }
 
   ingress {
